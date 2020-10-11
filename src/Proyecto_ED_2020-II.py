@@ -1,4 +1,5 @@
 import django
+print("hola mundo")
 class Node:
     def __init__(self,data):
         self.data = data
