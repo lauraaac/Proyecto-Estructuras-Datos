@@ -4,16 +4,17 @@ class Node:
         self.data = data
         self.next = None
 class lista_enlazada:
-    def mostrar_lista(self,head):ED
+    def mostrar_lista(self,head):
         current = head
         while current:
             print (current.data)
             current = current.next
     def insertar(self,head,data):
-        if(head== None):
-            return Node(data)
-        head.next= self.insertar(head.next,data)
-        return head 
+        new_node=Node(data)
+        new_node.next=head
+        head=new_node
+        return head
+
 inventario=lista_enlazada()
 head=None
 usuarios={"pepito123":("123456", "inventario"),"juanita123":("654321","produccion")}
