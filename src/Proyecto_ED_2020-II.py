@@ -19,11 +19,12 @@ inventario=lista_enlazada()
 head=None
 usuarios={"pepito123":("123456", "inventario"),"juanita123":("654321","produccion")}
 #se toma cada linea del archivo y hace casting a los datos que lo requieren
-for line in open("prueba_de_veras_.txt", "r").readlines():
+for line in open("1M_Datos_.txt",encoding="utf8").readlines():
     data=line.strip().split(",")
     #codigo producto
     data[2]=int(data[2])
     #Unidades producto
+    data[6]=float(data[6])
     data[6]=int(data[6])
     #Vida útil producto
     data[7]=int(data[7])
