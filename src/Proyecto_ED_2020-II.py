@@ -9,6 +9,26 @@ class lista_enlazada:
         while current:
             print (current.data)
             current = current.next
+    def lista_actualizada(self,head,archivo):
+        current = head
+        while current:
+            lista=current.data
+            lista[0]=lista[0].lstrip("'")
+            lista[0]=lista[0].rstrip("'")
+            lista[1]=lista[1].lstrip("'")
+            lista[1]=lista[1].rstrip("'")
+            lista[3]=lista[3].lstrip("'")
+            lista[3]=lista[3].rstrip("'")
+            lista[4]=lista[4].lstrip("'")
+            lista[4]=lista[4].rstrip("'")
+            lista[5]=lista[5].lstrip("'")
+            lista[5]=lista[5].rstrip("'")
+            dato=str(lista)
+            dato=dato.lstrip("[")
+            dato=dato.rstrip("]")
+            archivo.write(lista[0]+","+lista[1]+","+str(lista[2])+","+lista[3]+","+lista[4]+","+lista[5]+","+str(lista[6])+","+
+            str(lista[7])+","+str(lista[8])+","+str(lista[9])+"\n")
+            current = current.next
     def insertar(self,head,data):
         new_node=Node(data)
         new_node.next=head
@@ -19,12 +39,11 @@ inventario=lista_enlazada()
 head=None
 usuarios={"pepito123":("123456", "inventario"),"juanita123":("654321","produccion")}
 #se toma cada linea del archivo y hace casting a los datos que lo requieren
-for line in open("1M_Datos_.txt",encoding="utf8").readlines():
+for line in open("prueba_de_veras_.txt","r+").readlines():
     data=line.strip().split(",")
     #codigo producto
     data[2]=int(data[2])
     #Unidades producto
-    data[6]=float(data[6])
     data[6]=int(data[6])
     #Vida útil producto
     data[7]=int(data[7])
@@ -35,8 +54,8 @@ for line in open("1M_Datos_.txt",encoding="utf8").readlines():
     #Se crea la tupla con los datos y se agrega a la lista enlazada
     datos=[data[0], data[1],data[2],data[3],data[4],data[5],data[6],data[7],data[8],data[9]]
     head=inventario.insertar(head,datos)
-inventario.mostrar_lista(head)
 bandera_ingreso=False
+archivo_nuevo=open("prueba_de_veras_.txt","w")
 while(bandera_ingreso==False):
     print("_________________________________")
     print("Bienvenido a Alpina")
@@ -64,87 +83,95 @@ while(bandera_ingreso==False):
             #Tendrá la opcíon de devolverse 
             while(volver==0):
                 print("Seleccione:")
-                print("1.Actualizar Inventario:")
-                print("2.Donaciones:")
-                print("3.Buscar:")
+                print("1.Agregar Inventario:")
+                print("2.Actualizar Inventario:")
+                print("3.Donaciones:")
+                print("4.Buscar:")
                 seleccion=int(input())
                 #se piden los datos, a pesar de que solo los que tienen asterisco son obligarios los otros deben tener un 0 (cero)
                 if(seleccion==1):
                     print("______________________________")
                     print("* -> campo obligatorio")
                     codigo=int(input("Código producto*:"))
-                    print(codigo)
                     cantidad=int(input("Cantidad*:"))
-                    print(cantidad)
                     ciudad=input("Ciudad:")
-                    print(ciudad)
                     lote=input("Fecha lote(DD/MM/AAAA)*:")
-                    print(lote)
                     producto=input("Producto:")
                     descripcion=input("Descripción:")
-                    vida_util=input("Vida Útil:")
+                    vida_util=int(input("Vida Útil:"))
                     caducidad=input("Fecha caducidad(DD/MM/AAAA)*:")
-                    print(caducidad)
                     costo_unitario=float(input("Costo Unitario:"))
-                    print(costo_unitario)
-                    #Una vez se ingresan los datos, este podrá ser agregado o actualizado
-                    print("Procesando....¿Desea agregar o actualizar?")
-                    print("1. Agregar")
-                    print("2. Actualizar")
-                    print("3.Salir")
-                    agregar_actualizar=int(input())
-                    #Agregar: ingresará a la lista encadenada
-                    if(agregar_actualizar==1):
-                        try:
-                            datos=[lote, ciudad, codigo,descripcion,producto,caducidad,cantidad,vida_util,costo_unitario ]
-                            head= inventario.insertar(head,datos)
-                            print("Actualización Exitosa")
+                    costo_total=float(input("Costo total:"))
+                    #Una vez se ingresan los datos, este podrá ser agregado o actualizado:
+                    try:
+                            existe=False
+                            datos=[lote, ciudad, codigo,descripcion,producto,caducidad,cantidad,vida_util,costo_unitario,costo_total]
+                            actual=head
+                            while(actual):
+                                producto=actual.data
+                                if(producto[2]==codigo and producto[0]==lote):
+                                    print("El producto ya existe. Para modificar vaya a la sección de actualización")
+                                    existe=True
+                                    break
+                                actual=actual.next
+                            if(not existe):
+                                head= inventario.insertar(head,datos)
+                                print("Actualización Exitosa")
+                            print("__________________________________________")
                             volver=int(input("Presione 0 para volver otro para salir..."))
-                        except:
-                            print("Error en la actualización")
+                    except:
+                            print("Error en la agregación, revise que los datos sean acordes.")
                     #Actualizar: tomará en cuenta el codigo del producto (unico) y la fecha de lote , estas actualizaciones serán de la cantidad de productos
-                    elif(agregar_actualizar==2):
-                        actual=head
-                        while(actual):
-                            producto=actual.data
-                            try:
-                                if(codigo in producto and producto[0]==lote):
-                                    producto[6]= cantidad
-                                    print("Actualización exitosa")
-                            except:
-                                print("Error en la actualización")
-                            actual=actual.next
-                        print("Presione 0 para volver otro para salir...")
-                        volver=int(input())
-                    print("______________________________")  
-                #Donaciones: Queda pendiente para hacer                
-                elif(seleccion==2):
-                    #Importante hacer este!!!
-                    print("se ingresan los datos del producto y pasa a la cola de donaciones")
-                #Se busca el producto teniendo en cuenta su codigo, puede arrojar más de 1 resultado ya que hay diferentes lotes.
-                elif(seleccion==3):
-                    busqueda=int(input("Código producto: "))
+                if(seleccion==2):
+                    print("______________________________")
+                    print("* -> campo obligatorio")
+                    codigo=int(input("Código producto*:"))
+                    cantidad=int(input("Cantidad*:"))
+                    lote=input("Fecha lote(DD/MM/AAAA)*:")
+                    actualizado=False
                     actual=head
                     while(actual):
                         producto=actual.data
-                        if(busqueda in producto):
-                            try:
-                                print("__________________________________")
-                                print("Producto:",producto[4])
-                                print("Descripción", producto[3])
-                                print("Cantidad:",producto[6])
-                                print("Fecha vencimiento:", producto[5])
-                                print("__________________________________")
-                            except:
-                                print("Not Found")
+                        if(codigo in producto and producto[0]==lote):
+                                producto[6]= cantidad
+                                print("Actualización exitosa")
                         actual=actual.next
+                    print("__________________________________________")
+                    print("Presione 0 para volver otro para salir...")
+                    volver=int(input())
+                    print("______________________________")  
+                #Donaciones: Queda pendiente para hacer                
+                elif(seleccion==3):
+                    #Importante hacer este!!!
+                    print("se ingresan los datos del producto y pasa a la cola de donaciones")
+                #Se busca el producto teniendo en cuenta su codigo, puede arrojar más de 1 resultado ya que hay diferentes lotes.
+                elif(seleccion==4):
+                    busqueda=int(input("Código producto: "))
+                    actual=head
+                    encontrado=False
+                    while(actual):
+                        producto=actual.data
+                        if(busqueda in producto):
+                            print("__________________________________")
+                            print("Producto:",producto[4])
+                            print("Descripción", producto[3])
+                            print("Cantidad:",producto[6])
+                            print("Fecha vencimiento:", producto[5])
+                            print("__________________________________")
+                            encontrado=True
+                            break
+                        actual=actual.next
+                    if(not encontrado):    
+                        print("Not Found")
+                            
+                    print("__________________________________________")
                     volver=int(input("Presione 0 para volver otro para salir..."))
                 else:
                     print("Ingrese una opción válida")
-                
+            inventario.lista_actualizada(head,archivo_nuevo)
+            print("¡Hasta pronto!")      
     else:
         print("usuario o clave incorrecta")
-        print("Hola mundo")
 
         
 
